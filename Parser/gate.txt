@@ -1,0 +1,5 @@
+gate1:2
+gate2:1
+gate3:1
+gate4:2
+PI:6
