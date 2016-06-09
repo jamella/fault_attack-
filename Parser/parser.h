@@ -29,7 +29,6 @@ public:
 
 class Parser
 {
-    friend class generator;
     friend class constructor;
     friend class Gate;
     friend void show_map(const std::map<int, Gate_info>& target);
@@ -44,9 +43,11 @@ public:
 private:
     std::map<int, Gate_info> gateInfo;
     std::vector<std::string> PI;
-    const std::string path;
     unsigned gate_counter;
     unsigned wire_counter;
+    
+    const std::string path;
+
 
     std::string find_gateName(const std::string&) const;
     std::string find_gateIn(const std::string& ) const;
