@@ -16,34 +16,39 @@ public:
 	virtual ~netlist_parser_ABC();
 	virtual void parse_input(std::string);
 	virtual void parse_CB(std::string);
+	virtual void parse_wire(std::string);
 	virtual void parse_output(std::string);
 	virtual void parse_gate(std::string);
 
-private:
+protected:
 	std::vector<std::string> find_netname(std::string gate);
 	std::string find_gatetype(std::string line);
-	std::vector<std::string> split_wire_info(std::string line, const std::string  line_type);
+	std::vector<std::string> split_wire_info(std::string line, const std::string& line_type);
 	std::string input_file;
 
 	std::map<std::string, unsigned> PI_name_to_index;
 	std::map<std::string, unsigned> PO_name_to_index;
+	std::map<std::string, unsigned> CB_name_to_index;
 	std::map<std::string, unsigned> wire_name_to_index;
 	std::map<std::string, unsigned> varIndexDict;
 
 	std::map<unsigned, std::string> PI_index_to_name;
 	std::map<unsigned, std::string> PO_index_to_name;
+	std::map<unsigned, std::string> CB_index_to_name;
+
 	std::map<unsigned, std::string> wire_index_to_name;
 	std::map<unsigned, std::string> indexVarDict;
 
 	std::vector<std::vector<std::string>> CNF;
+	std::vector<std::string> Vline;
 	std::map<std::string, int> gateTypeDict;
 };
 
 
 netlist_parser_ABC::netlist_parser_ABC(const std::string input):input_file(input)
 {
-	auto temp = gateTypeDict;
-	load_gateTypeDict(temp);
+	load_gateTypeDict(gateTypeDict);
+	SplitString(stripComments(Readall(input_file)), Vline, ";");
 }
 
 void netlist_parser_ABC::parse_gate(std::string gate)
@@ -70,7 +75,7 @@ void netlist_parser_ABC::parse_gate(std::string gate)
 
 
 
-std::vector<std::string> netlist_parser_ABC::split_wire_info(std::string line, const std::string line_type)
+std::vector<std::string> netlist_parser_ABC::split_wire_info(std::string line, const std::string& line_type)
 {
 	std::vector<std::string> result;
 
