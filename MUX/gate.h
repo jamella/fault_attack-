@@ -46,17 +46,22 @@ private:
 std::vector<std::string> Gate::build_gate(const Parser& parser)
 {
 	collect_input(parser);
+
+
 	for(unsigned i = 0; i != fanin; ++i)
 	{
+
 		Gate_model+=build_inport(i);
 	}
+
 	Gate_model+=build_body();
+
 
 	for(auto i: inport_CB_list)
 	{
 		CB += i;
 	}
-	CB += body_CB;
+	CB += body_input;
 
 
 	return Gate_model;

@@ -45,7 +45,7 @@ private:
     std::vector<std::string> PI;
     unsigned gate_counter;
     unsigned wire_counter;
-    
+
     const std::string path;
 
 
@@ -78,7 +78,6 @@ Parser::Parser(const std::string& path)
         }
         else
         {
-            std::cout << "info: " << info << std::endl;
             auto gate_name = find_gateName(info);
             auto gate_fanin = std::stoi(find_gateIn(info));
             Gate_info gt(gate_name, gate_fanin);

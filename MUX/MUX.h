@@ -198,7 +198,6 @@ std::string Cool_Mux::create_OR(const std::vector<std::string> inputs, const std
         result += i + "),";
     }
     result += " .O(" + output_info + ") );";
-    std::cerr << result << std::endl;
     return result;
 }
 
