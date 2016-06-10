@@ -14,13 +14,15 @@ public:
 	netlist_parser_ABC(const std::string);
 
 	virtual ~netlist_parser_ABC() = default;
-//	virtual void parse_input(std::string);
-//	virtual void parse_CB(std::string);
-//	virtual void parse_wire(std::string);
-//	virtual void parse_output(std::string);
+	virtual void parse_input(std::string);
+	virtual void parse_CB(std::string);
+	virtual void parse_wire(std::string);
+	virtual void parse_output(std::string);
 	virtual void parse_gate(std::string);
 
-//protected:
+	virtual void parse() = 0;
+
+protected:
 	std::vector<std::string> find_netname(std::string gate);
 	std::string find_gatetype(std::string line);
 	std::vector<std::string> split_wire_info(std::string line, const std::string& line_type);
@@ -42,13 +44,78 @@ public:
 	std::vector<std::vector<std::string>> CNF;
 	std::vector<std::string> Vline;
 	std::map<std::string, int> gateTypeDict;
+
+private:
+	unsigned net_counter;
 };
 
-
+//======================================================
+// interface 
 netlist_parser_ABC::netlist_parser_ABC(const std::string input):input_file(input)
 {
 	load_gateTypeDict(gateTypeDict);
 	SplitString(stripComments(Readall(input_file.c_str())), Vline, ";");
+	net_counter = 1;
+}
+
+void netlist_parser_ABC::parse_input(std::string line)
+{
+	auto net_list = split_wire_info(line, "input");
+	for(auto net: net_list)
+	{
+		strip_all(net, " ");
+		strip_all(net, "\t");
+		PI_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
+		PI_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
+		varIndexDict.insert(std::pair<std::string, unsigned>(net, net_counter));
+		indexVarDict.insert(std::pair<unsigned, std::string>(net_counter, net));
+		++net_counter;
+	}
+
+}
+void netlist_parser_ABC::parse_CB(std::string line)
+{
+	auto net_list = split_wire_info(line, "CB");
+	for(auto net: net_list)
+	{
+		strip_all(net, " ");
+		strip_all(net, "\t");
+		CB_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
+		CB_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
+		varIndexDict.insert(std::pair<std::string, unsigned>(net, net_counter));
+		indexVarDict.insert(std::pair<unsigned, std::string>(net_counter, net));
+		++net_counter;
+	}
+}
+
+void netlist_parser_ABC::parse_wire(std::string line)
+{
+	auto net_list = split_wire_info(line, "wire");
+	for(auto net: net_list)
+	{
+		strip_all(net, " ");
+		strip_all(net, "\t");
+		wire_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
+		wire_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
+		varIndexDict.insert(std::pair<std::string, unsigned>(net, net_counter));
+		indexVarDict.insert(std::pair<unsigned, std::string>(net_counter, net));
+		++net_counter;
+	}
+}
+
+void netlist_parser_ABC::parse_output(std::string line)
+{
+	auto net_list = split_wire_info(line, "output");
+	for(auto net: net_list)
+	{
+		strip_all(net, " ");
+		strip_all(net, "\t");
+		PO_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
+		PO_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
+		varIndexDict.insert(std::pair<std::string, unsigned>(net, net_counter));
+		indexVarDict.insert(std::pair<unsigned, std::string>(net_counter, net));
+		++net_counter;
+	}
 }
 
 void netlist_parser_ABC::parse_gate(std::string gate)
@@ -72,7 +139,8 @@ void netlist_parser_ABC::parse_gate(std::string gate)
 }
 
 
-
+//========================================================
+// implementation
 std::vector<std::string> netlist_parser_ABC::split_wire_info(std::string line, const std::string& line_type)
 {
 	std::vector<std::string> result;
