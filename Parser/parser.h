@@ -12,9 +12,6 @@
 #include <sstream>
 #include <regex>
 
-
-
-
 class Gate_info
 {
 public:

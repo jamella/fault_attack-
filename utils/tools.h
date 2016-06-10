@@ -12,7 +12,7 @@
 
 
 using namespace std;
-
+/*
 inline string get_localtime()
     {
         time_t nowtime;
@@ -21,6 +21,7 @@ inline string get_localtime()
         local = localtime(&nowtime);
         return asctime(local);
     }
+    */
 inline void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)   //source, result, seperator
     {
       std::string::size_type pos1, pos2;
@@ -36,6 +37,7 @@ inline void SplitString(const std::string& s, std::vector<std::string>& v, const
       if(pos1 != s.length())
         v.push_back(s.substr(pos1));
     }
+   
 inline string stripComments(string in)
 {
     regex pattern("\\/\\/(?!RE__).*\\n");
@@ -49,6 +51,7 @@ inline string stripComments(string in)
 
     return in;
 }
+/*
 inline string toBinary(int n, int length)
 {
     string r;
@@ -69,7 +72,7 @@ inline string toBinary(int n, int length)
     }
     return result;
 }
-
+*/
 inline string Readall(const char* path)
     {
 
@@ -83,23 +86,23 @@ inline string Readall(const char* path)
     }
 
 
-inline void strip_all(string& str,const string old_value)
+inline void strip_all(string& str,const string &old_value)
     {
-    	while(true)
-    	{
-    		if(str.find(old_value) != string::npos)
-    		{
-    			str.replace(str.find(old_value), old_value.length(), "");
-    		}
-    		else
-    		{
-    			break;
-    		}
-    	}
+        while(true)
+        {
+            if(str.find(old_value) != string::npos)
+            {
+                str.replace(str.find(old_value), old_value.length(), "");
+            }
+            else
+            {
+                break;
+            }
+        }
 
     }
 
-inline    void load_gateTypeDict(map<string, int>& gateTypeDict)
+void load_gateTypeDict(map<string, int>& gateTypeDict)
     {
         gateTypeDict.insert(std::pair<string, int>("and",1));
         gateTypeDict.insert(std::pair<string, int>("or", 2));
@@ -111,8 +114,8 @@ inline    void load_gateTypeDict(map<string, int>& gateTypeDict)
         gateTypeDict.insert(std::pair<string, int>("one", 8));
         gateTypeDict.insert(std::pair<string, int>("zero", 9));
     }
-
-inline void print_map(map<int, string>& input_map)
+/*
+inline void print_map(map<unsigned, string>& input_map)
 {
     cout << "map contain:" << endl;
     for(map<int, string>::iterator it = input_map.begin(); it != input_map.end(); ++it)
@@ -123,34 +126,35 @@ inline void print_map(map<int, string>& input_map)
 
  inline   vector<string> ReadByColon(const char* path)
     {
-    	vector<string> result;
-    	string read_all;
-    	read_all = Readall(path);
-    	strip_all(read_all, "\r");
-    	SplitString(read_all, result, ";");
-    	return result;
+        vector<string> result;
+        string read_all;
+        read_all = Readall(path);
+        strip_all(read_all, "\r");
+        SplitString(read_all, result, ";");
+        return result;
     }
+*/
 inline vector<string> find_netname(string gate)
 
     {
-    	string s = gate;
-    	vector<string> container;
-    	vector<string> netnames;
-    	SplitString(s, container, "(");
-    	for (vector<string>::iterator iter = container.begin(); iter != container.end(); ++iter) {
-    		smatch nets;
-    		regex pattern("([^\\)]+)([\\)])");
-    		regex_search(*iter, nets, pattern);
-    		for (unsigned int i = 0; i < nets.size(); i++) {
-    			if (nets[i].str().find(")") == string::npos) netnames.push_back(nets[i].str());
-    		}
+        string s = gate;
+        vector<string> container;
+        vector<string> netnames;
+        SplitString(s, container, "(");
+        for (vector<string>::iterator iter = container.begin(); iter != container.end(); ++iter) {
+            smatch nets;
+            regex pattern("([^\\)]+)([\\)])");
+            regex_search(*iter, nets, pattern);
+            for (unsigned int i = 0; i < nets.size(); i++) {
+                if (nets[i].str().find(")") == string::npos) netnames.push_back(nets[i].str());
+            }
 
 
-    	}
+        }
 
-    	for (vector<string>::iterator iter = netnames.begin(); iter != netnames.end(); ++iter) {
-    	}
-    	return netnames;
+        for (vector<string>::iterator iter = netnames.begin(); iter != netnames.end(); ++iter) {
+        }
+        return netnames;
 
     }
 
@@ -163,7 +167,7 @@ inline string find_gatetype(string line)
         regex_search(line, result, pattern);
         return result[1].str();
     }
-
+/*
 inline void print_vector(vector<string> list, const char * path)
     {
         ofstream outfile(path);
@@ -181,7 +185,7 @@ inline void print_vector(vector<int> list, const char * path)
         }
 }
 
-
+*/
 template <typename T>
 std::vector<T> operator+(const std::vector<T> &A, const std::vector<T> &B)
 {

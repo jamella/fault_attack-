@@ -142,7 +142,7 @@ std::vector<std::string> Gate::build_inport(const unsigned& inport_index)
 	auto inport_output = name_output(index, "fanin", inport_index);
 
 	inport_CB_list.push_back(inport_CB);
-	Cool_Mux result(input, inport_CB, inport_output);
+	Cool_Mux result(input, inport_CB, inport_output, index, inport_index);
 	wire += result.wire;
 	wire.push_back(inport_output);
 	return result.to_vector(index, inport_index);
@@ -163,7 +163,8 @@ std::vector<std::string> Gate::build_body()
 		body_input.push_back("gate" + std::to_string(index) + "_body_CB_" + std::to_string(i));
 	}
 	output = body_output;
-	Standard_Mux result(body_input, body_CB, body_output);
+	Standard_Mux result(body_input, body_CB, body_output, index);
+	wire += result.wire;
 	return result.to_vector(index);
 }
 
@@ -181,6 +182,7 @@ std::string Gate::name_output(const unsigned& index, const std::string& type, co
 {
 	return "gate" + std::to_string(index) + "_" + type + std::to_string(inport_index); 
 }
+
 /*
 std::vector<std::vector<std::string>> Gate::collect_port_wire()
 {

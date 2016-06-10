@@ -12,7 +12,7 @@ friend class Gate;
 
 public:
     Standard_Mux() = default;
-    Standard_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info);
+    Standard_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info, const unsigned& i);
     std::vector<std::string> to_vector(const unsigned& gate_index);
 private:
     std::vector<std::string> two_input_MUX(const std::string &in_info1,const std::string &in_info2 , std::string &out_info, const std::string &CB_info, const unsigned& unit_index, const unsigned& level_index, const bool flag);
@@ -21,14 +21,17 @@ private:
     std::vector<std::string> wire;
     std::vector<std::string> CB;
     std::string output;
+
+    unsigned gate_index;
 };
 
 Standard_Mux::Standard_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info,
-                           const std::string &output_info)
+                           const std::string &output_info, const unsigned& i)
 {
     input = input_info;
     CB = CB_info;
     output = output_info;
+    gate_index = i;
     unsigned input_size = input_info.size();
 
     unsigned num_of_mux_this_line = input_size/2;
@@ -110,10 +113,10 @@ std::vector<std::string> Standard_Mux::two_input_MUX(const std::string &in_info1
 {
 
     std::vector<std::string> result;
-    std::string inv_out = "INDEX_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_inv";
-    std::string and1_out = "INDEX_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and0";
-    std::string and2_out = "INDEX_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and1";
-    std::string or_out = "INDEX_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index);
+    std::string inv_out = "gate" + std::to_string(gate_index) + "_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_inv";
+    std::string and1_out = "gate" + std::to_string(gate_index) + "_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and0";
+    std::string and2_out = "gate" + std::to_string(gate_index) + "_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and1";
+    std::string or_out = "gate" + std::to_string(gate_index) +"_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_or";
     result.push_back("inv1 gate( .a(" + CB_info +  "), .O(" + inv_out +") )");
     result.push_back("and2 gate( .a(" + in_info1 +"), .b(" + CB_info + "), .O(" + and1_out + ") );");
     result.push_back("and2 gate( .a(" + in_info2 +"), .b(" + inv_out + "), .O(" + and2_out + ") );");
@@ -149,7 +152,7 @@ class Cool_Mux
 friend class Gate;    
 public:
     Cool_Mux() = default;
-    Cool_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info);
+    Cool_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info, const unsigned &i, const unsigned &f);
     std::vector<std::string> to_vector(const unsigned& gate_index, const unsigned& inport_index);
 private:
     std::string create_AND(const std::string &input1, const std::string &input2, const std::string &output);
@@ -160,20 +163,24 @@ private:
     std::vector<std::string> wire;
     std::string output;
 
+    unsigned gate_index;
+    unsigned fanin_index;
     unsigned Mux_size;
 };
 
-Cool_Mux::Cool_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info)
+Cool_Mux::Cool_Mux(const std::vector<std::string> &input_info, const std::vector<std::string> &CB_info, const std::string &output_info, const unsigned &i, const unsigned& f)
 {
     input = input_info;
     CB = CB_info;
+    gate_index = i;
+    fanin_index = f;
     output = output_info;
     Mux_size = input_info.size();
     std::vector<std::string> AND_output;
 
     for(unsigned index = 0; index != Mux_size; ++index)
     {
-        std::string this_and_output_wire = "INDEX_faninNUM_and" + std::to_string(index);    // "1_fanin1_and1"
+        std::string this_and_output_wire = "gate" + std::to_string(gate_index) + "_fanin" + std::to_string(fanin_index) + "_and" + std::to_string(index);    // "1_fanin1_and1"
         model.push_back(create_AND(input_info[index], CB_info[index], this_and_output_wire));
         AND_output.push_back(this_and_output_wire);
     }

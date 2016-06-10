@@ -5,22 +5,22 @@
 #include <map>
 #include <vector>
 #include <regex>
-#include "dict.h"
-#include "tools.h"
+#include "utils/dict.h"
+#include "utils/tools.h"
 class netlist_parser_ABC
 {
 public:
 	netlist_parser_ABC() = default;
 	netlist_parser_ABC(const std::string);
 
-	virtual ~netlist_parser_ABC();
-	virtual void parse_input(std::string);
-	virtual void parse_CB(std::string);
-	virtual void parse_wire(std::string);
-	virtual void parse_output(std::string);
+	virtual ~netlist_parser_ABC() = default;
+//	virtual void parse_input(std::string);
+//	virtual void parse_CB(std::string);
+//	virtual void parse_wire(std::string);
+//	virtual void parse_output(std::string);
 	virtual void parse_gate(std::string);
 
-protected:
+//protected:
 	std::vector<std::string> find_netname(std::string gate);
 	std::string find_gatetype(std::string line);
 	std::vector<std::string> split_wire_info(std::string line, const std::string& line_type);
@@ -48,26 +48,24 @@ protected:
 netlist_parser_ABC::netlist_parser_ABC(const std::string input):input_file(input)
 {
 	load_gateTypeDict(gateTypeDict);
-	SplitString(stripComments(Readall(input_file)), Vline, ";");
+	SplitString(stripComments(Readall(input_file.c_str())), Vline, ";");
 }
 
 void netlist_parser_ABC::parse_gate(std::string gate)
 {
 	auto gate_type = find_gatetype(gate);
 	auto gate_nets = find_netname(gate);
-	std::vector<std::string> gate_input(gate_nets.begin(), gate_nets.end() - 2);
 	std::string gate_output(gate_nets.back());
-
 	std::vector<int> gate_input_index;
 	int gate_output_index = varIndexDict[gate_output];
 
-	for(auto in: gate_input)
+	for(auto iter = gate_nets.begin(); iter != gate_nets.end() - 1;  ++iter)
 	{
-		gate_input_index.push_back(varIndexDict[in]);
+		gate_input_index.push_back(varIndexDict[*iter]);
 	}
 	strip_all(gate_type, " ");
 	strip_all(gate_type, "\t");
-	auto caseNO = gateTypeDict[gate];
+	auto caseNO = gateTypeDict[gate_type];
 
 	auto cnfLines = transGATE(caseNO, gate_input_index, gate_output_index);
 	CNF.push_back(cnfLines);
@@ -119,4 +117,5 @@ std::string netlist_parser_ABC::find_gatetype(std::string line)
     std::regex_search(line, result, pattern);
     return result[1].str();
 }
+
 #endif
