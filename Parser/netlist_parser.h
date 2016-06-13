@@ -10,6 +10,7 @@
 class netlist_parser_ABC
 {
 friend class CNF_handler;
+friend class Attack_CNF_handler;
 public:
 	netlist_parser_ABC() = default;
 	netlist_parser_ABC(const std::string);

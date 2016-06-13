@@ -29,15 +29,20 @@ protected:
 	virtual std::string assign(const unsigned& net_index, const bool& value) const;
 	virtual std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list) const;
 
-private:
+public:
 	const netlist_parser_ABC* target;
+	std::vector<std::vector<std::string>> CNF;
 	unsigned net_amount;
 };
 
 
 //============================================================================
 //copy control
-CNF_handler::CNF_handler(const netlist_parser_ABC* info):target(info),net_amount(target->varIndexDict.size()){}
+CNF_handler::CNF_handler(const netlist_parser_ABC* info):target(info)
+{
+	net_amount = target->varIndexDict.size();
+	CNF = target->CNF;
+}
 
 //============================================================================
 // interface
