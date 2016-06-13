@@ -49,7 +49,7 @@ private:
     std::string find_gateName(const std::string&) const;
     std::string find_gateIn(const std::string& ) const;
 
-    unsigned find_PiNum(const std::string& ) const;
+    std::string find_PiName(const std::string& ) const;
 
 
 };
@@ -58,7 +58,6 @@ Parser::Parser(const std::string& path)
 {
     std::fstream infile(path);
     std::string info;
-    unsigned PI_num = 0;
     gate_counter = 0;
     wire_counter = 0;
 
@@ -66,12 +65,8 @@ Parser::Parser(const std::string& path)
     {
         if(info.find("PI") != std::string::npos)
         {
-            PI_num = find_PiNum(info);
-            for(unsigned num = 0; num != PI_num; ++num) 
-            {
-                PI.push_back("PI_"+ std::to_string(num));
- //               std::cout << "PI_" + std::to_string(num) << std::endl;
-            }
+            auto PI_name = find_PiName(info);
+            PI.push_back(PI_name);
         }
         else
         {
@@ -83,14 +78,13 @@ Parser::Parser(const std::string& path)
             ++gate_counter;
         }
     }
-    wire_counter = gate_counter + PI_num;
 }
 
 
 std::string Parser::find_gateName(const std::string& info) const
 {
     std::smatch result;
-    std::regex pattern("([a-zA-Z0-9]*)(:)([0-9]*)");
+    std::regex pattern("(.*)(:)([0-9]*)");
     std::regex_search(info, result, pattern);
     return result[1].str();
 }
@@ -98,18 +92,17 @@ std::string Parser::find_gateName(const std::string& info) const
 std::string Parser::find_gateIn(const std::string &info) const
 {
     std::smatch result;
-    std::regex pattern("([a-zA-Z0-9]*)(:)([0-9]*)");
+    std::regex pattern("(.*)(:)([0-9]*)");
     std::regex_search(info, result, pattern);
     return result[3].str();
 }
 
-unsigned Parser::find_PiNum(const std::string &info) const {
+std::string Parser::find_PiName(const std::string &info) const {
     std::smatch result;
-    std::regex pattern("(PI)(:)([0-9]*)");
+    std::regex pattern("(PI)(=)(.*)");
     std::regex_search(info, result, pattern);
     auto num = result[3].str();
-//    std::cerr << "NUM:"<< num << std::endl;
-    return std::stoi(num);
+    return num;
 }
 void show_map(const std::map<int, Gate_info>& target);
 

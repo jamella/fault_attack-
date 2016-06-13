@@ -18,19 +18,19 @@ public:
 	virtual ~CNF_handler() = default;
 
 protected:
-	virtual std::vector<std::string> connect_nets(const std::string& net_name1, const std::string& net_name2);
-	virtual std::vector<std::string> connect_nets(const std::string& net_name, const unsigned& offset);		
-	virtual std::vector<std::string> connect_nets(const unsigned& net_index1, const unsigned& net_index2);	
+	virtual std::vector<std::string> connect_nets(const std::string& net_name1, const std::string& net_name2) const;
+	virtual std::vector<std::string> connect_nets(const std::string& net_name, const unsigned& offset) const;		
+	virtual std::vector<std::string> connect_nets(const unsigned& net_index1, const unsigned& net_index2) const;	
 
-	virtual std::vector<std::vector<std::string>> duplicate_circuit();
-	virtual std::vector<std::vector<std::string>> duplicate_circuit(const unsigned& offset);
+	virtual std::vector<std::vector<std::string>> duplicate_circuit() const;
+	virtual std::vector<std::vector<std::string>> duplicate_circuit(const unsigned& offset) const;
 
-	virtual std::string assign(const std::string& net_name, const bool& value);
-	virtual std::string assign(const unsigned& net_index, const bool& value);
-	virtual std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list);
+	virtual std::string assign(const std::string& net_name, const bool& value) const;
+	virtual std::string assign(const unsigned& net_index, const bool& value) const;
+	virtual std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list) const;
 
 private:
-	netlist_parser_ABC* target;
+	const netlist_parser_ABC* target;
 	unsigned net_amount;
 };
 
@@ -44,21 +44,21 @@ CNF_handler::CNF_handler(const netlist_parser_ABC* info):target(info),net_amount
 
 
 // connect
-std::vector<std::string> CNF_handler::connect_nets(const std::string& net_name1, const std::string& net_name2)
+std::vector<std::string> CNF_handler::connect_nets(const std::string& net_name1, const std::string& net_name2) const
 {
-	unsigned net_index1 = target->varIndexDict(net_name1);
-	unsigned net_index2 = target->varIndexDict(net_name2);
+	const unsigned net_index1 = target->varIndexDict.at(net_name1);
+	const unsigned net_index2 = target->varIndexDict.at(net_name2);
 	return connect_nets(net_index1, net_index2);
 }
 
-std::vector<std::string> CNF_handler::connect_nets(const std::string& net_name, const unsigned& offset)	
+std::vector<std::string> CNF_handler::connect_nets(const std::string& net_name, const unsigned& offset) const	
 {
-	unsigned net_index1 = target->varIndexDict(net_name);
+	unsigned net_index1 = target->varIndexDict.at(net_name);
 	unsigned net_index2 = net_index1 + offset;
 	return connect_nets(net_index1, net_index2);
 }	
 
-std::vector<std::string> CNF_handler::connect_nets(const unsigned& net_index1, const unsigned& net_index2)
+std::vector<std::string> CNF_handler::connect_nets(const unsigned& net_index1, const unsigned& net_index2) const
 {
 	std::vector<std::string> result;
 	result.push_back(std::to_string(net_index1) + " -" + std::to_string(net_index2) + " 0");
@@ -67,11 +67,11 @@ std::vector<std::string> CNF_handler::connect_nets(const unsigned& net_index1, c
 }	
 
 // duplicate
-std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit()
+std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit() const
 {
 	return duplicate_circuit(net_amount);
 }
-std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsigned& offset)
+std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsigned& offset) const
 {
 	std::vector<std::vector<std::string>> result;
 	for(auto gate: target->CNF)
@@ -96,24 +96,28 @@ std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsig
 }
 
 // assign
-std::string CNF_handler::assign(const std::string& net_name, const bool& value)
+std::string CNF_handler::assign(const std::string& net_name, const bool& value) const
 {
-	auto net_index = target->varIndexDict[net_name];
+	const unsigned net_index = target->varIndexDict.at(net_name);
 	return assign(net_index, value);
 }
 
-std::string CNF_handler::assign(const unsigned& net_index, const bool& value)
+std::string CNF_handler::assign(const unsigned& net_index, const bool& value) const
 {
 	if(value == true) return std::to_string(net_index) + " 0\n";
-	if(value == false) return "-" + std::to_string(net_index) + " 0\n";
+	else return "-" + std::to_string(net_index) + " 0\n";
 }
 
-std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list)
+std::vector<std::string> CNF_handler::assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list) const
 {
-	for(auto net_iter = net_name_list.cbegin(), auto val_iter = value_list.cbegin(); net_iter != net_name_list.cend(); ++net_iter, ++value_list)
+	std::vector<std::string>::const_iterator net_iter = net_name_list.cbegin();
+	std::vector<bool>::const_iterator val_iter = value_list.cbegin();
+	std::vector<std::string> result;
+	for(; net_iter != net_name_list.cend(); ++net_iter, ++val_iter)
 	{
-		assign(*net_iter, *value_list);
+		result.push_back(assign(*net_iter, *val_iter));
 	}
+	return result;
 }
 
 #endif

@@ -12,7 +12,7 @@ class Gate
 	friend class constructor;
 public:
 	Gate() = default;
-	Gate(const unsigned& fanin_num, const unsigned& Gate_index):index(Gate_index),fanin(fanin_num){}	
+	Gate(const std::string& gate_name, const unsigned& fanin_num, const unsigned& Gate_index):name(gate_name), index(Gate_index),fanin(fanin_num){}	
 
 	void show_info();
 	void show_model();
@@ -25,6 +25,7 @@ private:
 	std::vector<std::string> name_CB(const unsigned& index, const std::string& type, const unsigned& component_index, const unsigned& input_size);
 	std::string name_output(const unsigned& index, const std::string& type, const unsigned& inport_index);
 
+	std::string name;
 	unsigned index;
 	unsigned fanin;
 
@@ -127,11 +128,12 @@ void Gate::show_model()
 void Gate::collect_input(const Parser& parser)
 {
 	input = parser.PI;
+
 	for(unsigned i = 0; i < parser.gate_counter; ++i)
 	{
 		if(i != index)
 		{
-			input.push_back("gate" + std::to_string(i) + "_in");
+			input.push_back(parser.gateInfo.at(i).name + "_in");
 		}
 	}
 }
@@ -150,7 +152,7 @@ std::vector<std::string> Gate::build_inport(const unsigned& inport_index)
 
 std::vector<std::string> Gate::build_body()
 {
-	std::string body_output = "gate" + std::to_string(index) + "_out";
+	std::string body_output = name + "_out";
 	auto input_size = std::pow(2, fanin);
 
 	for(unsigned i = 0; i != fanin; ++i)

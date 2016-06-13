@@ -9,6 +9,7 @@
 #include "utils/tools.h"
 class netlist_parser_ABC
 {
+friend class CNF_handler;
 public:
 	netlist_parser_ABC() = default;
 	netlist_parser_ABC(const std::string);

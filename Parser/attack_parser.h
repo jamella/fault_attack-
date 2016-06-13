@@ -9,10 +9,10 @@ public:
 	Attack_parser(const std::string path):netlist_parser_ABC(path){net_counter = 1;};
 
 	virtual ~Attack_parser() = default;
-	void Attack();
+	virtual void parse();
 
 
-//private:
+private:
 	virtual void parse_PI(const std::string&);
 	virtual void parse_CB(const std::string&);
 	virtual void parse_internal_PI(const std::string&);
@@ -28,7 +28,7 @@ public:
 	unsigned net_counter;	
 };
 
-void Attack_parser::Attack()
+void Attack_parser::parse()
 {
 	for(auto line: Vline)
 	{
