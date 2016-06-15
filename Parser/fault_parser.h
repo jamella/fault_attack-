@@ -12,10 +12,13 @@ public:
 	std::vector<bool> output_vector_S1;
 	std::vector<bool> output_vector_S0;
 	std::string fault_site;
+
+	unsigned fault_case = 0;
 };
 
 class Fault_parser
 {
+	friend class Attack_CNF_handler;
 public:
 	Fault_parser();
 	Fault_parser(std::string path_info);
@@ -41,10 +44,11 @@ Fault_parser::Fault_parser(std::string path_info):path(path_info)
 	{
 		if(!infile.is_open())
 		{
-			std::cerr << "file is not open correctly!" << std::endl;
+			std::cerr << "Fault_parser: file is not open correctly!" << std::endl;
 		}
 		else
 		{
+//			parse_head_line(line);
 			std::string line;
 			while(getline(infile, line))
 			{
@@ -126,20 +130,22 @@ void Fault_parser::parse_S0_line(const std::string& line, Trial& round)
 
 std::vector<std::string> Fault_parser::parse_line(const std::string& line)
 {
-	std::vector<std::string> res;
-	if(line.find("#") != std::string::npos)
-	{
-	    std::regex pattern("([0|1]*)[\\s]*(\\S*)[\\s]*([0|1|-])[\\s]*([0|1]*)");
-	    std::smatch result;
-	    std::regex_match(line, result, pattern);
-	    res.push_back(result[1].str());
-	    res.push_back(result[2].str());
-	    res.push_back(result[3].str());
-	    res.push_back(result[4].str());
-	    return res;
-	}
-	else return res;
+    std::vector<std::string> res;
+    if((line.find("#") == std::string::npos) && (line != ""))
+    {
+        std::regex pattern("([0|1]*);([^;]*);([0|1|-]);([0|1]*)");
+        std::smatch result;
+        std::regex_search(line, result, pattern);
+        res.push_back(result[1].str());
+        res.push_back(result[2].str());
+        res.push_back(result[3].str());
+        res.push_back(result[4].str());
+
+        return res;
+    }
+    else return res;
 }
+
 
 std::vector<bool> Fault_parser::stob(const std::string &line)
 {

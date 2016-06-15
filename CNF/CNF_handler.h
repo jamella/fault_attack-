@@ -22,17 +22,20 @@ protected:
 	virtual std::vector<std::string> connect_nets(const std::string& net_name, const unsigned& offset) const;		
 	virtual std::vector<std::string> connect_nets(const unsigned& net_index1, const unsigned& net_index2) const;	
 
-	virtual std::vector<std::vector<std::string>> duplicate_circuit() const;
-	virtual std::vector<std::vector<std::string>> duplicate_circuit(const unsigned& offset) const;
+	virtual std::vector<std::vector<std::string>> duplicate_circuit();
+	virtual std::vector<std::vector<std::string>> duplicate_circuit(const unsigned& offset);
 
 	virtual std::string assign(const std::string& net_name, const bool& value) const;
 	virtual std::string assign(const unsigned& net_index, const bool& value) const;
 	virtual std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list) const;
+	virtual std::vector<std::string> assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list, const std::map<std::string, unsigned>& dict) const;
 
 public:
 	const netlist_parser_ABC* target;
 	std::vector<std::vector<std::string>> CNF;
+
 	unsigned net_amount;
+	unsigned current_last_index;
 };
 
 
@@ -42,6 +45,7 @@ CNF_handler::CNF_handler(const netlist_parser_ABC* info):target(info)
 {
 	net_amount = target->varIndexDict.size();
 	CNF = target->CNF;
+	current_last_index = net_amount;
 }
 
 //============================================================================
@@ -72,11 +76,13 @@ std::vector<std::string> CNF_handler::connect_nets(const unsigned& net_index1, c
 }	
 
 // duplicate
-std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit() const
+std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit() 
 {
-	return duplicate_circuit(net_amount);
+	auto temp = current_last_index;
+	current_last_index += net_amount;
+	return duplicate_circuit(temp);
 }
-std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsigned& offset) const
+std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsigned& offset) 
 {
 	std::vector<std::vector<std::string>> result;
 	for(auto gate: target->CNF)
@@ -125,4 +131,15 @@ std::vector<std::string> CNF_handler::assign(const std::vector<std::string>& net
 	return result;
 }
 
+std::vector<std::string> CNF_handler::assign(const std::vector<std::string>& net_name_list, const std::vector<bool>& value_list, const std::map<std::string, unsigned>& dict) const
+{
+	std::vector<std::string>::const_iterator net_iter = net_name_list.cbegin();
+	std::vector<bool>::const_iterator val_iter = value_list.cbegin();
+	std::vector<std::string> result;
+	for(;net_iter != net_name_list.cend(); ++net_iter, ++ val_iter)
+	{
+		result.push_back(assign(dict.at(*net_iter), *val_iter));
+	}
+	return result;
+}
 #endif

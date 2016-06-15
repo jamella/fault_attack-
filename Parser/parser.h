@@ -40,6 +40,7 @@ public:
 private:
     std::map<int, Gate_info> gateInfo;
     std::vector<std::string> PI;
+    std::vector<std::string> PO;
     unsigned gate_counter;
     unsigned wire_counter;
 
@@ -50,6 +51,7 @@ private:
     std::string find_gateIn(const std::string& ) const;
 
     std::string find_PiName(const std::string& ) const;
+    std::string find_PoName(const std::string& ) const;
 
 
 };
@@ -67,6 +69,11 @@ Parser::Parser(const std::string& path)
         {
             auto PI_name = find_PiName(info);
             PI.push_back(PI_name);
+        }
+        else if(info.find("PO") != std::string::npos)
+        {
+            auto PO_name = find_PoName(info);
+            PO.push_back(PO_name);
         }
         else
         {
@@ -104,6 +111,15 @@ std::string Parser::find_PiName(const std::string &info) const {
     auto num = result[3].str();
     return num;
 }
+
+std::string Parser::find_PoName(const std::string &info) const {
+    std::smatch result;
+    std::regex pattern("(PO)(=)(.*)");
+    std::regex_search(info, result, pattern);
+    auto num = result[3].str();
+    return num;
+}
+
 void show_map(const std::map<int, Gate_info>& target);
 
 void Parser::show_gate_info() const

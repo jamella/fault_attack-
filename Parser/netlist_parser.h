@@ -22,7 +22,7 @@ public:
 	virtual void parse_output(std::string);
 	virtual void parse_gate(std::string);
 
-	virtual void parse() = 0;
+	virtual void parse();
 
 protected:
 	std::vector<std::string> find_netname(std::string gate);
@@ -140,6 +140,7 @@ void netlist_parser_ABC::parse_gate(std::string gate)
 	CNF.push_back(cnfLines);
 }
 
+void netlist_parser_ABC::parse() {}
 
 //========================================================
 // implementation
