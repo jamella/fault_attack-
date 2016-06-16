@@ -1,6 +1,7 @@
 #ifndef CNF_ATTACK_CNF_HANDLER_H
 #define CNF_ATTACK_CNF_HANDLER_H
 
+#include <iostream>
 #include "CNF/CNF_handler.h"
 #include "attack/constructor.h"
 #include "Parser/fault_parser.h"
@@ -15,17 +16,20 @@ class Attack_CNF_handler: public virtual CNF_handler
 {
 public:
 	Attack_CNF_handler() = default;
-	Attack_CNF_handler(const netlist_parser_ABC* circuit_info, const constructor constructor_info):CNF_handler(circuit_info), circuit(constructor_info), duplication_amount(1){}
+	Attack_CNF_handler(const netlist_parser_ABC* circuit_info, const constructor constructor_info):CNF_handler(circuit_info), circuit(constructor_info), duplication_amount(0){}
 
 
 	void start_attack(Fault_parser& parser);
-
-//private:
+	void print_file(std::ostream&);
+private:
 
 	const constructor circuit;
 	unsigned duplication_amount;
-	std::vector<std::string> CB_constrains;
 
+	std::vector<std::string> CB_constrains;
+	std::vector<std::string> CB_connections;
+	std::vector<std::vector<std::vector<std::string>>> duplications;
+	void connect_CB();
 	void learn_clause(Fault_parser& trials);
 	void process_inport_CB();
 	void add_learnt_constrains(Fault_parser& trials);
@@ -38,16 +42,15 @@ public:
 	std::vector<std::string> connect_internal(const Trial& round, const std::map<std::string, unsigned>& dict);
 
 	std::vector<std::string> process_CB(std::vector<std::string> CBs);
-	std::vector<std::vector<std::vector<std::string>>> duplications;
 	unsigned determine_case(const Trial&) const;
 };
 
 void Attack_CNF_handler::start_attack(Fault_parser& parser)
 {
 	process_inport_CB();
-
 	learn_clause(parser);
 	add_learnt_constrains(parser);
+	connect_CB();
 }
 
 
@@ -61,7 +64,7 @@ void Attack_CNF_handler::process_inport_CB()
 			auto temp = process_CB(for_each_fan);
 			CB_constrains += temp;	// generate constrain for certain fan inport
 		}
-	}
+	}	
 	CNF.push_back(CB_constrains);
 }
 
@@ -72,19 +75,19 @@ void Attack_CNF_handler::learn_clause(Fault_parser& trials)
 		round.fault_case = determine_case(round);
 		if(round.fault_case == SA_NOMATTER)
 		{
-			std::cerr << "case = " << "no matter" << std::endl;
+//			std::cerr << "case = " << "no matter" << std::endl;
 		}
 		else if(round.fault_case == SA_1)
 		{
-			std::cerr<< "case = " << "SA_1" << std::endl;
+//			std::cerr<< "case = " << "SA_1" << std::endl;
 		}
 		else if(round.fault_case == SA_0) 
 		{
-			std::cerr << "case = " << "SA_0" << std::endl;
+//			std::cerr << "case = " << "SA_0" << std::endl;
 		}
 		else if(round.fault_case == SA_ALLMATTER)
 		{
-			std::cerr << "case = " << "SA_ALLMATTER" << std::endl;
+//			std::cerr << "case = " << "SA_ALLMATTER" << std::endl;
 		}
 		else
 		{
@@ -157,7 +160,7 @@ std::vector<std::vector<std::string>> Attack_CNF_handler::make_S0_duplication(co
 	auto assign_fault_site_1_in = assign(dict_1.at(round.fault_site + "_in"),true);
 	auto assign_fault_site_1_out = assign(dict_1.at(round.fault_site + "_out"),true);
 	connect_in_1.push_back(assign_fault_site_1_in);
-	connect_in_1.push_back(assign_fault_site_1_in);
+	connect_in_1.push_back(assign_fault_site_1_out);
 	dup_1.push_back(connect_in_1);
 	dup_1.push_back(assign(circuit.PI_list, round.input_vector, dict_1));
 	dup_1.push_back(assign(circuit.PO_list, round.output_vector_FF, dict_1));
@@ -186,7 +189,7 @@ std::vector<std::vector<std::string>> Attack_CNF_handler::make_S1_duplication(co
 	auto assign_fault_site_1_in = assign(dict_1.at(round.fault_site + "_in"),true);
 	auto assign_fault_site_1_out = assign(dict_1.at(round.fault_site + "_out"),false);
 	connect_in_1.push_back(assign_fault_site_1_in);
-	connect_in_1.push_back(assign_fault_site_1_in);
+	connect_in_1.push_back(assign_fault_site_1_out);
 	dup_1.push_back(connect_in_1);
 	dup_1.push_back(assign(circuit.PI_list, round.input_vector, dict_1));
 	dup_1.push_back(assign(circuit.PO_list, round.output_vector_S1, dict_1));
@@ -235,6 +238,7 @@ std::vector<std::string> Attack_CNF_handler::connect_internal(const Trial& round
 	{
 		if(element  != round.fault_site + "_in")
 		{
+			strip_all(element, "_in");
 			result+=connect_nets(dict.at(element + "_in"), dict.at(element + "_out"));
 		}
 	}
@@ -249,6 +253,51 @@ std::map<std::string, unsigned> Attack_CNF_handler::get_current_varIndexDict(con
 		element.second += offset;
 	}
 	return result;
+}
+
+void Attack_CNF_handler::connect_CB()
+{
+	for(unsigned index = 1; index <= duplication_amount; ++index)
+	{
+		for(auto &each_gate: circuit.CB_list)
+		{
+			for(auto &each_CB: each_gate)
+			{
+				auto original_index = target->varIndexDict.at(each_CB);
+				auto target_index = original_index + index*net_amount;
+				CB_connections += connect_nets(original_index, target_index);
+			}
+		}
+	}
+}
+
+void Attack_CNF_handler::print_file(std::ostream& os)
+{
+	for(auto &each_dup: duplications)
+	{
+		for(auto &each_gate: each_dup)
+		{
+			for(auto &each_line: each_gate)
+			{
+				os << each_line;
+			}
+		}
+		os << std::endl;
+	}
+	os << std::endl;
+
+	for(auto &each_line: CB_constrains)
+	{
+		os << each_line;
+	}
+	os << std::endl;
+
+	for(auto &line: CB_connections)
+	{
+		os << line;
+	}
+	os << std::endl;
+
 }
 
 #endif

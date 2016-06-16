@@ -35,7 +35,6 @@ public:
 	std::vector<std::vector<std::string>> CNF;
 
 	unsigned net_amount;
-	unsigned current_last_index;
 };
 
 
@@ -45,7 +44,6 @@ CNF_handler::CNF_handler(const netlist_parser_ABC* info):target(info)
 {
 	net_amount = target->varIndexDict.size();
 	CNF = target->CNF;
-	current_last_index = net_amount;
 }
 
 //============================================================================
@@ -70,17 +68,15 @@ std::vector<std::string> CNF_handler::connect_nets(const std::string& net_name, 
 std::vector<std::string> CNF_handler::connect_nets(const unsigned& net_index1, const unsigned& net_index2) const
 {
 	std::vector<std::string> result;
-	result.push_back(std::to_string(net_index1) + " -" + std::to_string(net_index2) + " 0");
-	result.push_back("-" + std::to_string(net_index1) + " " + std::to_string(net_index2) + " 0");
+	result.push_back(std::to_string(net_index1) + " -" + std::to_string(net_index2) + " 0\n");
+	result.push_back("-" + std::to_string(net_index1) + " " + std::to_string(net_index2) + " 0\n");
 	return result;
 }	
 
 // duplicate
 std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit() 
 {
-	auto temp = current_last_index;
-	current_last_index += net_amount;
-	return duplicate_circuit(temp);
+	return duplicate_circuit(net_amount);
 }
 std::vector<std::vector<std::string>> CNF_handler::duplicate_circuit(const unsigned& offset) 
 {
@@ -140,6 +136,7 @@ std::vector<std::string> CNF_handler::assign(const std::vector<std::string>& net
 	{
 		result.push_back(assign(dict.at(*net_iter), *val_iter));
 	}
+
 	return result;
 }
 #endif

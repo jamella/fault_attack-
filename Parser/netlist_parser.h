@@ -127,20 +127,13 @@ void netlist_parser_ABC::parse_gate(std::string gate)
 	std::string gate_output(gate_nets.back());
 	std::vector<int> gate_input_index;
 	int gate_output_index = varIndexDict[gate_output];
-	std::cerr << "parsing gate: " << gate << std::endl;
-	std::cerr << "input is: " << std::endl;
 	for(auto iter = gate_nets.begin(); iter != gate_nets.end() - 1;  ++iter)
 	{
 		gate_input_index.push_back(varIndexDict[*iter]);
-		std::cerr << *iter << " = " << varIndexDict[*iter] << std::endl;
 	}
-	std::cerr << "output is: " << gate_output_index << std::endl;
-		std:: cerr << "gate = " << gate_type << std::endl;
-		std::cerr <<"======================================" << std::endl;
 	strip_all(gate_type, " ");
 	strip_all(gate_type, "\t");
 	auto caseNO = gateTypeDict[gate_type];
-
 	auto cnfLines = transGATE(caseNO, gate_input_index, gate_output_index);
 	CNF.push_back(cnfLines);
 }

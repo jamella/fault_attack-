@@ -73,7 +73,7 @@ Parser::Parser(const std::string& path)
         else if(info.find("PO") != std::string::npos)
         {
             auto PO_name = find_PoName(info);
-            PO.push_back(PO_name);
+            PO.push_back(PO_name + "_out");
         }
         else
         {
