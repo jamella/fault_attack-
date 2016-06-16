@@ -117,7 +117,7 @@ std::vector<std::string> Standard_Mux::two_input_MUX(const std::string &in_info1
     std::string and1_out = "gate" + std::to_string(gate_index) + "_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and0";
     std::string and2_out = "gate" + std::to_string(gate_index) + "_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_and1";
     std::string or_out = "gate" + std::to_string(gate_index) +"_body_" + std::to_string(level_index) + "_" + std::to_string(unit_index) + "_or";
-    result.push_back("inv1 gate( .a(" + CB_info +  "), .O(" + inv_out +") )");
+    result.push_back("inv1 gate( .a(" + CB_info +  "), .O(" + inv_out +") );");
     result.push_back("and2 gate( .a(" + in_info1 +"), .b(" + CB_info + "), .O(" + and1_out + ") );");
     result.push_back("and2 gate( .a(" + in_info2 +"), .b(" + inv_out + "), .O(" + and2_out + ") );");
     if(flag)

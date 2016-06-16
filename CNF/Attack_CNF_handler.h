@@ -45,6 +45,7 @@ public:
 void Attack_CNF_handler::start_attack(Fault_parser& parser)
 {
 	process_inport_CB();
+
 	learn_clause(parser);
 	add_learnt_constrains(parser);
 }

@@ -9,7 +9,7 @@ public:
 	Attack_parser(const std::string path):netlist_parser_ABC(path){net_counter = 1;};
 
 	virtual ~Attack_parser() = default;
-	virtual void parse();
+	virtual void parse_circuit();
 
 
 private:
@@ -28,7 +28,7 @@ private:
 	unsigned net_counter;	
 };
 
-void Attack_parser::parse()
+void Attack_parser::parse_circuit()
 {
 	for(auto line: Vline)
 	{
@@ -66,7 +66,7 @@ void Attack_parser::parse_internal_PI(const std::string& line)
 		PI_internal_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
 		PI_internal_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
 		++net_counter;
-	}	
+	}		
 }
 
 void Attack_parser::parse_CB(const std::string& line)
@@ -79,7 +79,8 @@ void Attack_parser::parse_CB(const std::string& line)
 		CB_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
 		CB_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
 		++net_counter;
-	}		
+	}
+	
 }
 
 void Attack_parser::parse_internal_PO(const std::string& line)
@@ -92,7 +93,7 @@ void Attack_parser::parse_internal_PO(const std::string& line)
 		PO_internal_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
 		PO_internal_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
 		++net_counter;
-	}		
+	}
 }
 void Attack_parser::parse_wire(const std::string& line)
 {
@@ -104,7 +105,7 @@ void Attack_parser::parse_wire(const std::string& line)
 		wire_name_to_index.insert(std::pair<std::string, unsigned>(net, net_counter));
 		wire_index_to_name.insert(std::pair<unsigned, std::string>(net_counter, net));
 		++net_counter;
-	}	
+	}
 }
 
 #endif

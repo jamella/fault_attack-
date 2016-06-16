@@ -39,7 +39,7 @@ protected:
 	std::map<unsigned, std::string> PI_index_to_name;
 	std::map<unsigned, std::string> PO_index_to_name;
 	std::map<unsigned, std::string> CB_index_to_name;
-
+public:
 	std::map<unsigned, std::string> wire_index_to_name;
 	std::map<unsigned, std::string> indexVarDict;
 
@@ -58,6 +58,7 @@ netlist_parser_ABC::netlist_parser_ABC(const std::string input):input_file(input
 	load_gateTypeDict(gateTypeDict);
 	SplitString(stripComments(Readall(input_file.c_str())), Vline, ";");
 	net_counter = 1;
+	if(Vline.size() == 0) std::cerr << "netlist_parser_ABC: open input file failed" << std::endl;
 }
 
 void netlist_parser_ABC::parse_input(std::string line)
@@ -73,7 +74,6 @@ void netlist_parser_ABC::parse_input(std::string line)
 		indexVarDict.insert(std::pair<unsigned, std::string>(net_counter, net));
 		++net_counter;
 	}
-
 }
 void netlist_parser_ABC::parse_CB(std::string line)
 {
@@ -127,11 +127,16 @@ void netlist_parser_ABC::parse_gate(std::string gate)
 	std::string gate_output(gate_nets.back());
 	std::vector<int> gate_input_index;
 	int gate_output_index = varIndexDict[gate_output];
-
+	std::cerr << "parsing gate: " << gate << std::endl;
+	std::cerr << "input is: " << std::endl;
 	for(auto iter = gate_nets.begin(); iter != gate_nets.end() - 1;  ++iter)
 	{
 		gate_input_index.push_back(varIndexDict[*iter]);
+		std::cerr << *iter << " = " << varIndexDict[*iter] << std::endl;
 	}
+	std::cerr << "output is: " << gate_output_index << std::endl;
+		std:: cerr << "gate = " << gate_type << std::endl;
+		std::cerr <<"======================================" << std::endl;
 	strip_all(gate_type, " ");
 	strip_all(gate_type, "\t");
 	auto caseNO = gateTypeDict[gate_type];
