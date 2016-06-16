@@ -27,6 +27,7 @@ public:
 class Parser
 {
     friend class constructor;
+    friend class print_solution;
     friend class Gate;
     friend void show_map(const std::map<int, Gate_info>& target);
 

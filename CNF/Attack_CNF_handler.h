@@ -105,11 +105,9 @@ vector<std::string> Attack_CNF_handler::process_CB(std::vector<std::string> CBs)
 	for(auto net: CBs)
 	{
 		head_cnf += std::to_string(dict.at(net)) + " "; 
-		std::cerr << "net: " << net << " = " << dict.at(net) << std::endl;
 	}
 	head_cnf += "0\n";
 	result.push_back(head_cnf);
-	std::cerr << "head_cnf = " << head_cnf << std::endl;
 	for(auto target_net: CBs)
 	{
 		for(auto net: CBs)
