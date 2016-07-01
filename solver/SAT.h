@@ -33,6 +33,8 @@ public:
 	SAT_solver(const std::string& path);
 
 	void solve(std::vector<unsigned>& freeze_variable);
+//	void solve();
+
 	void print_solution(std::ostream& os);
 private:
 	SimpSolver minisat;
@@ -75,6 +77,7 @@ void SAT_solver::print_solution(std::ostream& os)
 
 
 void SAT_solver::solve(std::vector<unsigned>& freeze_variable)
+//void SAT_solver::solve()
 {
 	freeze(freeze_variable);
 	minisat.eliminate(true);
