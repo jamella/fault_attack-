@@ -12,3 +12,4 @@ add change process:
 
 roll back:
 	git reset --hard 
+	git reflog

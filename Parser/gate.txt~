@@ -1,4 +1,5 @@
-gate1:2
-gate2:1
-gate3:2
-PI:2
+PI=IN_1
+PI=IN_2
+PO=OUT
+N1:1
+N2:2

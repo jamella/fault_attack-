@@ -75,6 +75,7 @@ Parser::Parser(const std::string& path)
         {
             auto PO_name = find_PoName(info);
             PO.push_back(PO_name + "_out");
+
         }
         else
         {
@@ -84,6 +85,7 @@ Parser::Parser(const std::string& path)
             gt.index = gate_counter;
             gateInfo.insert(std::pair<int, Gate_info>(gate_counter, gt));
             ++gate_counter;
+
         }
     }
 }
@@ -100,9 +102,9 @@ std::string Parser::find_gateName(const std::string& info) const
 std::string Parser::find_gateIn(const std::string &info) const
 {
     std::smatch result;
-    std::regex pattern("(.*)(:)([0-9]*)");
+    std::regex pattern("(.*):([0-9]*)");
     std::regex_search(info, result, pattern);
-    return result[3].str();
+    return result[2].str();
 }
 
 std::string Parser::find_PiName(const std::string &info) const {

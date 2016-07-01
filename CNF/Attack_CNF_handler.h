@@ -75,19 +75,19 @@ void Attack_CNF_handler::learn_clause(Fault_parser& trials)
 		round.fault_case = determine_case(round);
 		if(round.fault_case == SA_NOMATTER)
 		{
-//			std::cerr << "case = " << "no matter" << std::endl;
+			std::cerr << "case = " << "no matter" << std::endl;
 		}
 		else if(round.fault_case == SA_1)
 		{
-//			std::cerr<< "case = " << "SA_1" << std::endl;
+			std::cerr<< "case = " << "SA_1" << std::endl;
 		}
 		else if(round.fault_case == SA_0) 
 		{
-//			std::cerr << "case = " << "SA_0" << std::endl;
+			std::cerr << "case = " << "SA_0" << std::endl;
 		}
 		else if(round.fault_case == SA_ALLMATTER)
 		{
-//			std::cerr << "case = " << "SA_ALLMATTER" << std::endl;
+			std::cerr << "case = " << "SA_ALLMATTER" << std::endl;
 		}
 		else
 		{
