@@ -10,12 +10,14 @@
 class Gate
 {
 	friend class constructor;
+	friend class Parse_result;
 public:
 	Gate() = default;
 	Gate(const std::string& gate_name, const unsigned& fanin_num, const unsigned& Gate_index):name(gate_name), index(Gate_index),fanin(fanin_num){}	
 
 	void show_info();
 	void show_model();
+	void decide_gate();
 	std::vector<std::string> build_gate(const Parser&);	
 
 private:
@@ -38,6 +40,12 @@ private:
 	std::vector<std::string> Gate_model;
 
 	std::vector<std::string> body_input;
+
+	std::vector<std::vector<int>> inport_CB_value;
+	std::vector<int> body_CB_value;
+
+	std::vector<std::string> real_input_name;
+	std::string gate_type;
 };
 
 
@@ -48,6 +56,7 @@ std::vector<std::string> Gate::build_gate(const Parser& parser)
 {
 	collect_input(parser);
 
+	inport_CB_value.resize(fanin);
 
 	for(unsigned i = 0; i != fanin; ++i)
 	{
