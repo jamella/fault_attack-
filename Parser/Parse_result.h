@@ -7,11 +7,13 @@
 #include <regex>
 #include "attack/constructor.h"
 #include "MUX/gate.h"
+#include "utils/tools.h"
 class Parse_result
 {
 public:
 	Parse_result() = default;
 	Parse_result(std::string p, constructor cons);
+	void print_solution(ostream&);
 
 private:
 	std::vector<std::string> derive_info(const std::string&);
@@ -72,16 +74,37 @@ int Parse_result::find_fan_index(std::string fan_type)
 
 void Parse_result::assign_gate(int gate_index, std::string type, int index, int value)
 {
-	auto gate = gate_list.at(gate_index);
+	auto& gate = gate_list.at(gate_index);
 	if(type == "body")
 	{
 		gate.body_CB_value.push_back(value);
 	}
-	else
+	else if(type.find("fanin") != std::string::npos)
 	{
 		auto fan_index = find_fan_index(type);	
-		gate.inport_CB_value.at(fan_index).push_back(value);	
+		gate.inport_CB_value.at(fan_index).push_back(value);
 	}
 
 }
+
+void Parse_result::print_solution(ostream& s)
+{
+	s << "gate_index\tgate_output\tgate_body_value\t\tgate_input_net" << std::endl;
+	for(unsigned index = 0; index != gate_list.size(); ++index)
+	{
+		gate_list.at(index).decide_gate();
+		s << index << "\t\t" << gate_list.at(index).name << "\t\t";
+		for(auto value: gate_list.at(index).body_CB_value)
+		{
+			s << value;
+		}
+		s << "\t\t";
+		for(auto in: gate_list.at(index).real_input_name)
+		{
+			s << in << " ";
+		}
+		s << std::endl;
+	}
+}
+
 #endif

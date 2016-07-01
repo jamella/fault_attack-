@@ -186,6 +186,16 @@ inline void print_vector(vector<int> list, const char * path)
 }
 
 */
+
+template <typename T>
+void print_vector(vector<T> list)
+{
+    for(auto element:list)
+    {
+        std::cerr << element << " ";
+    }
+    std::cerr << std::endl;
+}
 template <typename T>
 std::vector<T> operator+(const std::vector<T> &A, const std::vector<T> &B)
 {

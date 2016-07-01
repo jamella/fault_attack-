@@ -51,7 +51,20 @@ private:
 
 //=============================================================
 //interface
-
+void Gate::decide_gate()
+{
+	for(auto inport: inport_CB_value)
+	{
+		for(unsigned index = 0; index != inport.size(); ++index)
+		{
+			if(inport.at(index) == 1)
+			{
+				real_input_name.push_back(input.at(index));
+				break;
+			}
+		}
+	}	
+}
 std::vector<std::string> Gate::build_gate(const Parser& parser)
 {
 	collect_input(parser);
